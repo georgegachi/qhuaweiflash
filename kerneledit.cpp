@@ -40,7 +40,7 @@ oldfont=font;
 // Заголовок панели
 font.setPointSize(font.pointSize()+7);
 font.setBold(true);
-hdrlabel=new QLabel("Редактор раздела KERNEL",this);
+hdrlabel=new QLabel("Kernel section editor",this);
 hdrlabel->setFont(font);
 hdrlabel->setStyleSheet("QLabel { color : green; }");
 vlm->addWidget(hdrlabel,0,Qt::AlignHCenter);
@@ -49,26 +49,26 @@ vlm->addWidget(hdrlabel,0,Qt::AlignHCenter);
 font=oldfont;
 font.setPointSize(font.pointSize()+5);
 font.setBold(true);
-parmlabel=new QLabel("Параметры ядра",this);
+parmlabel=new QLabel("The parameters of the nucleus",this);
 parmlabel->setFont(font);
 parmlabel->setStyleSheet("QLabel { color : blue; }");
 vlm->addWidget(parmlabel);
 vlm->addStretch(1);
 
-// Увеличиваем шрифт по умолчанию на 2 пункта
+// We increase the default font by 2 points
 labelfont=oldfont;
 labelfont.setPointSize(labelfont.pointSize()+2);
 
-// Компоновщик строк с параметрами
+// composer of lines with parameters
 flm=new QFormLayout(0);
 vlm->addLayout(flm);
 
-// Размер страницы
+// Page size
 str.sprintf("%i",hdr->page_size);
 pgslabel=new QLabel(str,this);
 pgslabel->setFont(labelfont);
 // pgslabel->setFont(labelfont);
-flm->addRow("Размер страницы",pgslabel);
+flm->addRow("Page size",pgslabel);
 flm->labelForField(pgslabel)->setFont(labelfont);
 
 // physical addr for kernel tags
@@ -95,7 +95,7 @@ flm->labelForField(dtlabel)->setFont(labelfont);
 strncpy(cline,(char*)hdr->cmdline,BOOT_ARGS_SIZE);
 str=cline;
 cmdline=new QLineEdit(str,this);
-flm->addRow("Параметры загрузки",cmdline);
+flm->addRow("Download parameters",cmdline);
 flm->labelForField(cmdline)->setFont(labelfont);
 
 vlm->addStretch(1);

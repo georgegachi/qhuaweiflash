@@ -44,19 +44,19 @@ dhex->setReadOnly(true);
 lm=new QVBoxLayout(this);
 lm->addWidget(dhex);
 
-// меню редактора
-menu_edit = new QMenu("HEX-Редактор",menubar);
+// editor menu
+menu_edit = new QMenu("HEX-Editor",menubar);
 menubar->addMenu(menu_edit);
 
-// меню undo-redo
-menu_undo=menu_edit->addAction("Отмена",dhex,SLOT(undo()),QKeySequence::Undo);
-menu_redo=menu_edit->addAction("Повтор",dhex,SLOT(redo()),QKeySequence::Redo);
-// Увеличение-Уменьшение шрифта
-menu_enlarge_font=menu_edit->addAction("Увеличить шрифт",this,SLOT(EnlargeFont()),QKeySequence("Ctrl++"));
-menu_reduce_font=menu_edit->addAction("Уменьшить шрифт",this,SLOT(ReduceFont()),QKeySequence("Ctrl+-"));
+// Menu Undo-Redo
+menu_undo=menu_edit->addAction("Cancellation",dhex,SLOT(undo()),QKeySequence::Undo);
+menu_redo=menu_edit->addAction("Repeat",dhex,SLOT(redo()),QKeySequence::Redo);
+// Increase-power font
+menu_enlarge_font=menu_edit->addAction("Increase the font",this,SLOT(EnlargeFont()),QKeySequence("Ctrl++"));
+menu_reduce_font=menu_edit->addAction("Reduce the font",this,SLOT(ReduceFont()),QKeySequence("Ctrl+-"));
 
-// подменю выбора ширины hex-редактора
-hwidth = new QMenu("Байт в строке",this);
+// Submenus for choosing the width of the hex editor
+hwidth = new QMenu("Byte in the line",this);
 wsel=new QActionGroup(hwidth);
 wsel->setExclusive(true);
 w16=hwidth->addAction("16");
@@ -75,11 +75,11 @@ w64=hwidth->addAction("64");
 w64->setCheckable(true);
 w64->setActionGroup(wsel);
 
-// достаем значение из конфига
+// Get the value from the config
 bpl=hconfig->value("/config/bpl").toInt();
 
 
-// Устанавливаем текущее значение
+// set the current value
 switch(bpl) {
   case 32:
     w32->setChecked(true);
@@ -101,25 +101,25 @@ switch(bpl) {
 dhex->setBytesPerLine(bpl);
 menu_edit->addMenu(hwidth);
 
-menu_ro=menu_edit->addAction("Только чтение",this,SLOT(ROswitch()),QKeySequence("Ctrl+e"));
+menu_ro=menu_edit->addAction("Only reading",this,SLOT(ROswitch()),QKeySequence("Ctrl+e"));
 menu_ro->setCheckable(true);
 menu_ro->setChecked(true);
 
-// Инофрмация для статусбара
+// Information for bar statuss
 roindicator=new QLabel("R/O",this);
 statusbar->addWidget(roindicator);  
 
 status_adr_info=new QLabel(this);
 statusbar->addWidget(status_adr_info);  
 
-// Сигналы и слоты
+// signals and slots
 connect(wsel,SIGNAL(triggered(QAction*)),this,SLOT(WidthSelector(QAction*)));
 connect(dhex,SIGNAL(currentAddressChanged(qint64)),this,SLOT(ShowAddres(qint64)));
 connect(dhex,SIGNAL(dataChanged()),this,SLOT(dchook()));
 }
 
 //********************************************************************
-//* Деструктор класса
+//* class destructor
 //********************************************************************
 hexeditor::~hexeditor() {
 
@@ -130,7 +130,7 @@ delete menu_edit;
 }
 
 //********************************************************************
-//* Выбор ширины редактора
+//* Choosing editor width
 //********************************************************************
 void hexeditor::WidthSelector(QAction* sel) {
   
@@ -139,7 +139,7 @@ else if (sel == w32) bpl=32;
 else if (sel == w48) bpl=48;
 else if (sel == w64) bpl=64;
 dhex->setBytesPerLine(bpl);
-// сохраняем в конфиг
+// Save in config
 hconfig->setValue("/config/bpl",bpl);
 
 }
@@ -156,7 +156,7 @@ QByteArray data;
 
 data=dhex->dataAt(adr,1);
 
-adrstr.sprintf("Позиция: %06llX   Байт:%02X",adr,(uint8_t)data.at(0));
+adrstr.sprintf("Position: %06llX   Manip:%02X",adr,(uint8_t)data.at(0));
 status_adr_info->setText(adrstr);   
 }
     

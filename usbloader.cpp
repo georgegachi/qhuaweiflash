@@ -11,12 +11,12 @@
 #include "usbloader.h"
 #include "ulpatcher.h"
 
-// указатель на открытый последовательный порт
-extern int siofd; // fd для работы с Последовательным портом
+// Index to an open serial port
+extern int siofd; // FD for working with a serial port
 
 
 //*************************************************
-//* Рассчет контрольной суммы командного пакета
+//* Calculation of the control amount of the command package
 //*************************************************
 void csum(unsigned char* buf, uint32_t len) {
 
@@ -35,7 +35,7 @@ buf[len+1]=csum&0xff;
 }
 
 //*************************************************
-//*   Отсылка командного пакета модему
+//*   Demonial package for modem
 //*************************************************
 int sendcmd(void* srcbuf, int len) {
 
@@ -43,13 +43,13 @@ unsigned char replybuf[1024];
 unsigned char cmdbuf[2048];
 unsigned int replylen;
 
-// локальная копия командного буфера
+// Local copy of the command buffer
 memcpy(cmdbuf,srcbuf,len);
 
-// добавляем в нее контрольную сумму
+// Add a control amount to it
 csum(cmdbuf,len);
 
-// отсылка команды
+// Determination of the team
 write(siofd,cmdbuf,len+2);  
 tcdrain(siofd);
 
@@ -62,7 +62,7 @@ return 0;
 }
 
 //*************************************
-//* Поиск linux-ядра в образе раздела
+//* Search Linux Yadra in the image of the section
 //*************************************
 int locate_kernel(uint8_t* pbuf, uint32_t size) {
   
@@ -79,7 +79,7 @@ return 0;
 //*********************************************
 uint32_t find_ptable(uint8_t* buf, uint32_t size) {
 
-// сигнатура заголовка таблицы  
+// Table title signature
 const uint8_t headmagic[16]={0x70, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x48, 0x65, 0x61, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80};  
 uint32_t off;
 
@@ -101,7 +101,7 @@ char ptbuf[0x800];
 
 in=fopen(filename,"r");
 if (in == 0) {
-  QMessageBox::critical(0,"Ошибка","Ошибка открытия файла");
+  QMessageBox::critical(0,"Error", "File opening error");
   return 0;
 }
 
@@ -109,18 +109,18 @@ if (in == 0) {
 fsize=fread(ptbuf,1,0x800,in);
 fclose(in);
 if (fsize != 0x800) {
-  QMessageBox::critical(0,"Ошибка","Слишком короткий файл");
+  QMessageBox::critical(0,"Error", "too short file");
   return 0;
 }  
 if (strncmp((char*)ptbuf,"pTableHead",10) != 0) {
-  QMessageBox::critical(0,"Ошибка","Файл не является таблицей разделов");
+  QMessageBox::critical(0,"Error", "File is not a table of sections");
   return 0;
 }  
 
 // ищем таблицу разделов внутри загрузчика
 ptoff=find_ptable(pbuf[1], part[1].size);
 if (ptoff == 0) {
-  QMessageBox::critical(0,"Ошибка","В загрузчике на найдена встроенная таблица разделов");
+  QMessageBox::critical(0,"Error", "in the bootloader on the built -in sections table");
   return 0;
 }  
 // замещаем таблицу разделов
@@ -136,7 +136,7 @@ return 1;
 void usbldialog::browse() {
 
 QString name;  
-name=QFileDialog::getOpenFileName(this,"Выбор файла загрузчика",".","usbloader (*.bin);;All files (*.*)");
+name=QFileDialog::getOpenFileName(this,"Choosing a bootloader file",".","usbloader (*.bin);;All files (*.*)");
 fname->setText(name);
 }
 
@@ -146,7 +146,7 @@ fname->setText(name);
 void usbldialog::ptbrowse() {
 
 QString name;  
-name=QFileDialog::getOpenFileName(this,"Выбор файла таблицы разделов",".","usbloader (*.bin);;All files (*.*)");
+name=QFileDialog::getOpenFileName(this,"Selection of the partition table file",".","usbloader (*.bin);;All files (*.*)");
 ptfname->setText(name);
 }
 
@@ -172,7 +172,7 @@ if (koff != 0) {
       return 1;
 }
 
-QMessageBox::critical(0,"Ошибка"," В загрузчике нет ANDROID-компонента - fastboot-загрузка невозможна");
+QMessageBox::critical(0,"Error", "in the bootloader there is no Android component-Fastboot loading is impossible");
 return 0;
   
 }
@@ -238,14 +238,14 @@ return sendcmd(&cmdeod,sizeof(cmdeod));
 }
 
 //***************************************
-//* Запуск загрузки
+//* Launch of loading
 //***************************************
 void usbload() {
 
-// хранилище каталога компонентов загрузчика
+// Storage of the Catalog of the Roader Components
 struct lhead part[5];
 
-// массив буферов для загрузки компонентов
+// array of buffers for loading components
 uint8_t* pbuf[5]={0,0,0,0,0};
 
 uint16_t numparts; // число компонентов для загрузки
@@ -262,7 +262,7 @@ static char ptfilename[200]={0};
 FILE* in;
 
 usbldialog* qd=new usbldialog;
-qd->setWindowTitle("Загрузка usbloader");
+qd->setWindowTitle("Download USBLoader");
 QVBoxLayout* vl=new QVBoxLayout(qd);
 
 QFont font;
@@ -293,7 +293,7 @@ QToolButton* fselector = new QToolButton(qd);
 fselector->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_DirIcon))); 
 gvl->addWidget(fselector,0,2);
 
-QLabel* lbl3=new QLabel("Таблица разделов:");
+QLabel* lbl3=new QLabel("Separate table:");
 gvl->addWidget(lbl3,1,0);
 
 qd->ptfname=new QLineEdit(qd);
@@ -310,20 +310,20 @@ QToolButton* ptclear = new QToolButton(qd);
 ptclear->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_TrashIcon))); 
 gvl->addWidget(ptclear,1,3);
 
-// кнопки выбора режима загрузки
-QCheckBox* fbflag = new QCheckBox("Загрузка в режиме FASTBOOT",qd);
+// buttons for choosing a loading mode
+QCheckBox* fbflag = new QCheckBox("Loading in Fastboot mode",qd);
 vl->addWidget(fbflag);
 
-QCheckBox* isbadflag= new QCheckBox("Отключить контроль дефектных блоков",qd);
+QCheckBox* isbadflag= new QCheckBox("Disable the control of defective blocks",qd);
 vl->addWidget(isbadflag);
 
-QCheckBox* patchflag= new QCheckBox("Отключить патч eraseall (ОПАСНО!!!)",qd);
+QCheckBox* patchflag= new QCheckBox("Disable the patch ERASEALL (dangerous !!!)",qd);
 vl->addWidget(patchflag);
 
 QDialogButtonBox* buttonBox = new QDialogButtonBox(qd);
 buttonBox->setOrientation(Qt::Horizontal);
-buttonBox->addButton("Отмена",QDialogButtonBox::RejectRole);
-buttonBox->addButton("Загрузка",QDialogButtonBox::AcceptRole);
+buttonBox->addButton("Cancellation",QDialogButtonBox::RejectRole);
+buttonBox->addButton("Loading",QDialogButtonBox::AcceptRole);
 vl->addWidget(buttonBox,10,Qt::AlignHCenter);
 
 QObject::connect(buttonBox, SIGNAL(accepted()), qd, SLOT(accept()));
@@ -335,24 +335,24 @@ QObject::connect(ptclear, SIGNAL(clicked()), qd, SLOT(ptclear()));
 // Запускаем диалог
 res=qd->exec();
 
-// вынимаем данные из диалога
+// We take out the data from the dialogue
 fflag=fbflag->isChecked();
 pflag=patchflag->isChecked();
 bflag=isbadflag->isChecked();
 strcpy(filename,qd->fname->displayText().toLocal8Bit());
 strcpy(ptfilename,qd->ptfname->displayText().toLocal8Bit());
 
-// удаляем панель диалога
+// Remove the dialog panel
 delete qd;
 
 if (res != QDialog::Accepted) return;
 
-//--------- Чтение загрузчика в память ---------------
+// -------- reading the bootloader in memory ---------------
 
-// открываем файл загрузчика
+// Open the bootloader file
 in=fopen(filename,"r");
 if (in == 0) {
-  QMessageBox::critical(0,"Ошибка","Ошибка открыти файла");
+  QMessageBox::critical(0,"Error", "error open the file");
   return;
 }  
   
@@ -360,7 +360,7 @@ if (in == 0) {
 // Прверяем сигнатуру usloader
 fread(&i,1,4,in);
 if (i != 0x20000) {
-  QMessageBox::critical(0,"Ошибка","Файл не является загрузчиком usbloader");
+  QMessageBox::critical(0,"Error", "File is not a USBLoader bootloader");
   fclose(in);
   return;
 }  
@@ -389,7 +389,7 @@ for(i=0;i<numparts;i++) {
  pbuf[i]=(uint8_t*)malloc(part[i].size);
  fsize=fread(pbuf[i],1,part[i].size,in);
  if (part[i].size != fsize) {
-      QMessageBox::critical(0,"Ошибка","Неожиданный конец файла");
+      QMessageBox::critical(0,"Error", "unexpected end of the file");
       fclose(in);
       return;
  }
@@ -408,7 +408,7 @@ if (fflag) {
 if (!pflag) {
   res=pv7r2(pbuf[1], part[1].size)+ pv7r11(pbuf[1], part[1].size) + pv7r1(pbuf[1], part[1].size) + pv7r22(pbuf[1], part[1].size) + pv7r22_2(pbuf[1], part[1].size);
   if (res == 0)  {
-   QMessageBox::critical(0,"Ошибка","Не найдена сигнатура патча, загрузка не выполняется");
+   QMessageBox::critical(0,"Error", "not found a patch signature, loading is not performed");
    return;
   }  
 }  
@@ -417,32 +417,32 @@ if (!pflag) {
 if (bflag) {
   res=perasebad(pbuf[1], part[1].size);
   if (res == 0)  {
-   QMessageBox::critical(0,"Ошибка","Не найдена сигнатура BAD ERASE, загрузка не выполняется");
+   QMessageBox::critical(0,"Error", "not found the signature BAD ERASE, loading is not performed");
    return;
   }  
 }  
 
 
-// Замещаем таблицу разделов
+// Subtage the table of sections
 if (strlen(ptfilename) != 0) {
  if (!ptable_patch(ptfilename, pbuf, part)) return;
 } 
 
 //-------------------------------------------------------------------  
-// Настройка SIO
+// SIME SILM
 if (!open_port())  {
-  QMessageBox::critical(0,"Ошибка","Последовательный порт не открывается");
+  QMessageBox::critical(0,"Error", "The serial port does not open");
   return;
 }  
 
 
-// Проверяем загрузочный порт
+// Check the loading port
 c=0;
-write(siofd,"A",1);   // отправляем произвольный байт в порт
+write(siofd,"A",1);   // We send an arbitrary byte to the port
 bl=read(siofd,&c,1);
-// ответ должен быть U (0x55)
+// The answer should be U (0x55)
 if (c != 0x55) {
-  QMessageBox::critical(0,"Ошибка","Последовательный порт не находится в режиме USB Boot");
+  QMessageBox::critical(0,"Error", "Conservative port is not in USB Boot mode");
   close_port();
   return;
 }  
@@ -454,26 +454,26 @@ QFormLayout* lmf=new QFormLayout(ind);
 
 QProgressBar* partbar = new QProgressBar(ind);
 partbar->setValue(0);
-lmf->addRow("Раздел:",partbar);
+lmf->addRow("Section:",partbar);
 
 QProgressBar* totalbar = new QProgressBar(ind);
 totalbar->setValue(0);
-lmf->addRow("Всего:",totalbar);
+lmf->addRow("Total:",totalbar);
 
 ind->show();
 
-// главный цикл загрузки - загружаем все блоки, найденные в заголовке
+// main loading cycle - load all the blocks found in the header
 
 for(bl=0;bl<numparts;bl++) {
-
   
- // стартовый пакет  
+  
+ // starter pack
  if (!start_part(part[bl].size,part[bl].adr,part[bl].lmode)) {
-   QMessageBox::critical(0,"Ошибка","Модем отверг заголовок компонента");
+   QMessageBox::critical(0,"Error", "modem rejected the header of the component");
    goto leave;
  }  
 
-  // Цикл поблочной загрузки данных
+  // Load loading cycle of data
   datasize=1024;
   pktcount=1;
   for(adr=0;adr<part[bl].size;adr+=1024) {
@@ -486,16 +486,16 @@ for(bl=0;bl<numparts;bl++) {
     QCoreApplication::processEvents();
     
     if (!send_data_packet(pktcount++,(uint8_t*)(pbuf[bl]+adr),datasize)) {
-      QMessageBox::critical(0,"Ошибка","Модем отверг пакет данных");
+      QMessageBox::critical(0,"Error", "Modem rejected a data package");
       goto leave;
     }  
   }
-  // обновляем размер уже загруженных данных
+  // Update the size of the already loaded data
   loadedsize+=part[bl].size;
 
 
   if (!close_part(pktcount)) {
-      QMessageBox::critical(0,"Ошибка","Модем отверг команду окончания компонента");
+      QMessageBox::critical(0,"Error", "The modem rejected the command of the component");
       goto leave;
     }  
 } 
@@ -504,7 +504,7 @@ totalbar->setValue(100);
 partbar->setValue(100);
 QCoreApplication::processEvents();
       
-QMessageBox::information(0,"ОК","Загрузка окончена");
+QMessageBox::information(0,"OK","Loading is over");
 
 leave:
 close_port();
